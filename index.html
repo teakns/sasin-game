@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="img/icon-192.png">
+<title>사신 수호대: 문화재를 지켜라</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+
+<div id="hud">
+  <div class="row"><img id="hface" alt=""><div><div id="hname" class="jua" style="font-size:18px"></div><div id="hearts" aria-label="생명력"></div></div></div>
+  <div id="hlabel" class="jua" style="font-size:18px"></div>
+  <div class="row"><span id="hstars" class="jua" style="font-size:18px"></span><span id="savestat"></span>
+    <button class="btn hudbtn" id="hbHelp">❓ 도움말</button><button class="btn hudbtn" id="hbWorld">전국 지도</button><button class="btn hudbtn" id="hbRest">쉼터</button><button class="btn hudbtn" id="hbDogam">도감</button><button class="btn hudbtn" id="hbFull" title="전체 화면">⛶ 전체 화면</button><button class="btn hudbtn" id="hbSound" title="소리 설정"></button></div>
+</div>
+
+<!-- 0. 시작 화면 · 프롤로그 -->
+<section id="vSplash" class="view on">
+  <div id="splash">
+    <div id="spFaces"></div>
+    <h1 id="spTitle">사신 수호대</h1>
+    <div class="jua" id="spSub">문화재를 지켜라</div>
+    <div class="muted" id="spEn">Four Guardians: Protect Our Heritage</div>
+    <div id="spHint">화면을 눌러 시작해요</div>
+    <div id="spNote">🔊 소리가 나요. 오른쪽 위 단추로 끌 수 있어요.</div>
+  </div>
+  <button class="btn ghost sndbtn" id="sndSplash"></button>
+</section>
+<section id="vIntro" class="view">
+  <div id="introStage"></div>
+  <div id="introHint">📱 가로로 돌리면 더 크게 볼 수 있어요</div>
+  <div id="introBar"><div id="introDots"></div><div class="row"><button class="btn ghost" id="introSkip">건너뛰기</button><button class="btn gold" id="introNext">다음 ▶</button></div></div>
+  <button class="btn ghost sndbtn" id="sndIntro"></button>
+</section>
+
+<!-- 1. 로그인 -->
+<section id="vLogin" class="view">
+  <button class="btn ghost sndbtn" id="sndLogin"></button>
+  <div class="center">
+    <h1 style="font-size:38px;text-align:center;color:var(--gold)">사신 수호대</h1>
+    <div class="jua" style="font-size:24px;text-align:center;margin-bottom:4px">문화재를 지켜라</div>
+    <div class="muted" style="text-align:center;margin-bottom:16px">Four Guardians: Protect Our Heritage</div>
+    <div class="card dark">
+      <div id="loginBox">
+        <div class="jua" style="font-size:20px;margin-bottom:8px">선생님께 받은 코드를 입력해요</div>
+        <input id="codeIn" class="txt" maxlength="12" placeholder="코드 6자리" autocomplete="off">
+        <label class="row" style="margin-top:10px;font-size:14px"><input type="checkbox" id="remember"> 이 기기에 코드를 기억해요 (내 기기에서만 켜 주세요)</label>
+        <div id="loginMsg" class="msg"></div>
+        <div class="row" style="margin-top:6px"><button class="btn gold" id="btnLogin">시작하기</button><button class="btn ghost" id="btnPractice">연습 모드 (저장 안 함)</button></div>
+      </div>
+      <div class="row" style="margin-top:10px;justify-content:center"><button class="btn ghost" id="btnIntro" style="min-height:40px;font-size:15px">📖 프롤로그 다시 보기</button></div>
+      <div id="noUrl" class="msg muted" style="display:none">저장 주소가 아직 설정되지 않았어요. 지금은 연습 모드만 할 수 있어요.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. 신수 고르기 -->
+<section id="vSelect" class="view">
+  <h2 style="font-size:30px">함께 지킬 사신을 골라 주세요</h2>
+  <div class="muted">신수마다 속도와 능력이 달라요. 지역에 들어가기 전에는 다른 신수로 바꿀 수 있어요.</div>
+  <div class="sel" id="selGrid"></div>
+  <div class="row" style="margin-top:14px;justify-content:space-between"><button class="btn ghost" id="selBack">돌아가기</button><button class="btn gold" id="selOk" disabled>이 신수로 정했어요</button></div>
+</section>
+
+<!-- 3. 전국 지도 -->
+<section id="vWorld" class="view">
+  <div id="worldWrap">
+    <div id="worldMap"><img class="land" id="worldImg" alt="한반도와 북쪽 땅을 그린 지도"></div>
+    <div id="worldSide">
+      <h2 style="font-size:26px">도굴꾼이 전국으로 흩어졌어요!</h2>
+      <div class="muted" style="line-height:1.5">지역을 차례로 지켜요. 앞 지역의 퀘스트 5개를 모두 깨면 다음 지역이 열려요.</div>
+      <div id="regionList" style="display:flex;flex-direction:column;gap:8px"></div>
+      <div class="jua" style="font-size:16px;margin-top:4px">시대 순서</div>
+      <div id="era"></div>
+      <div class="row" style="margin-top:4px"><button class="btn" id="wbChange">신수 바꾸기</button><button class="btn ghost" id="wbOut">나가기</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. 지역(퀘스트) -->
+<section id="vRegion" class="view">
+  <div class="row" style="justify-content:space-between;margin-bottom:8px"><div class="jua" id="qLabel" style="font-size:20px"></div>
+    <div id="gwrap"><span id="bStat"></span></div></div>
+  <div id="stage">
+    <canvas id="cv" width="960" height="465" aria-label="지역 지도"></canvas>
+    <div id="toast"></div>
+    <div id="joy" aria-label="이동 조이스틱"><div id="knob"></div></div>
+    <div id="acts"><button class="ab" id="bSkill" aria-label="능력"></button><button class="ab off" id="bChase" aria-label="던지기"></button></div>
+    <div id="ovQuiz" class="ov"><div class="card">
+      <div class="row"><span class="chip" style="background:#8B6B3E;color:#FFF8E6">안내판</span><span id="qSite" style="font-size:14px;color:#6B5644"></span></div>
+      <div id="qClue" style="font-size:18px;line-height:1.5;margin-top:8px"></div>
+      <div style="font-size:13px;color:#9B4B2A;margin-top:8px">문제</div>
+      <div id="qText" class="jua" style="font-size:25px;line-height:1.3"></div>
+      <div id="qOpts"></div>
+      <div class="row" style="margin-top:12px"><button class="btn ghost" id="qHintBtn" style="color:var(--ink);border-color:#8B6B3E;min-height:44px;font-size:15px">힌트 보기</button><span id="qMsg" style="font-size:15px;color:#6B5644"></span></div>
+      <div id="qHint" style="display:none;margin-top:8px;background:#FFF8E6;border:2px dashed #8B6B3E;border-radius:10px;padding:8px 12px;font-size:15px;line-height:1.45"></div>
+    </div></div>
+    <div id="ovDone" class="ov"><div class="card">
+      <div class="row"><div style="width:42px;height:42px;border-radius:50%;background:#2F8F83;display:flex;align-items:center;justify-content:center;color:#fff;font-size:26px">✓</div>
+        <div class="jua" style="font-size:32px;color:#245F57">보호 완료!</div><div id="dName" style="font-size:20px"></div>
+        <div id="dReg" class="chip" style="margin-left:auto;background:#FFF8E6;border:1.5px solid #2F8F83;color:#245F57"></div></div>
+      <div class="row" style="margin-top:10px;align-items:flex-start"><div id="dArt" style="flex:1 1 230px;aspect-ratio:380/280;border:2px solid #8B6B3E;border-radius:12px;overflow:hidden"></div>
+        <div style="flex:1 1 230px;font-size:16px;line-height:1.6"><div id="dExp"></div><div id="dScore" class="jua" style="font-size:22px;margin-top:8px;color:#9B4B2A"></div><div id="dScoreD" style="font-size:13px;color:#6B5644"></div></div></div>
+      <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn gold" id="dNext">다음 문화재로</button></div>
+    </div></div>
+    <div id="ovLevels" class="ov"><div class="dark card" style="max-width:820px">
+      <div class="jua" style="font-size:30px">레벨을 골라요</div><div id="lvSub" class="muted" style="font-size:15px;line-height:1.5;margin:4px 0 10px"></div>
+      <div id="lvGrid" class="lvgrid"></div>
+      <div style="margin-top:10px"><button class="btn" id="lvHelp">❓ 도움말 (도굴꾼 잡는 방법)</button></div>
+      <div class="muted" style="font-size:13px;line-height:1.6;margin-top:10px">키보드: 이동 방향키 또는 W A S D · 던지기 E · 능력 스페이스바 · 일시정지 P 또는 Esc<br>태블릿: 왼쪽 조이스틱으로 이동하고 오른쪽 버튼을 눌러요. 도굴꾼은 숲에 숨고, 가까이 가면 도망가며 삽·괭이·곡괭이를 던져요. 강은 다리로만 건널 수 있어요(주작은 날아서 건너요).</div></div></div>
+    <div id="ovClear" class="ov"><div class="card" style="text-align:center">
+      <div class="jua" style="font-size:40px;color:#9B4B2A" id="cTitle">레벨 클리어!</div>
+      <div id="cText" style="font-size:18px;line-height:1.7;margin:8px 0"></div>
+      <div class="row" style="justify-content:center"><button class="btn" id="cAgain">다시 하기</button><button class="btn" id="cLevels">레벨 고르기</button><button class="btn gold" id="cBtn">전국 지도로</button></div>
+    </div></div>
+    <div id="ovHelp" class="ov"><div class="dark card" style="max-width:780px">
+      <div class="jua" style="font-size:30px">도굴꾼을 잡는 방법</div>
+      <div id="hpSub" class="muted" style="font-size:14px;line-height:1.5;margin:2px 0 10px">처음이라면 꼭 읽어 보세요! 나중에 '도움말' 버튼으로 다시 볼 수 있어요.</div>
+      <div class="hp3">
+        <div><div class="hpi">🎯</div><div class="jua hpt">① 맞혀요</div><div class="hpx">던지기 버튼(키보드 <b>E</b>)으로 도굴꾼에게 무기를 던져요. 맞은 도굴꾼은 잠깐 기절하거나 얼어서 움직이지 못해요.</div></div>
+        <div><div class="hpi">🤝</div><div class="jua hpt">② 붙어요</div><div class="hpx">멈춘 도굴꾼 곁에 가까이 가서 <b>0.2초만</b> 붙어 있으면 잡혀요! 풀리기 전에 얼른 달려가요.</div></div>
+        <div><div class="hpi">🏃</div><div class="jua hpt">③ 피해요</div><div class="hpx">도굴꾼이 던지는 삽·괭이·곡괭이에 맞으면 생명력이 1 줄어요. 느낌표(!)와 붉은 점선이 보이면 옆으로 피해요.</div></div>
+      </div>
+      <div class="hpmore">
+        <div>📜 문화재에 닿으면 문제가 나와요. 맞히면 문화재를 지켜요.</div>
+        <div>⏱ 제한 시간 안에 문화재를 모두 지켜요. 문화재 2곳을 도굴당하거나 생명력이 0이 되면 실패해요.</div>
+        <div>🏹 도굴꾼을 모두 잡으면 <b>감시탑이 깨어나</b> 화살을 쏴요. 붉은 고리 안에서는 조심해요!</div>
+        <div>🎮 이동: 방향키/WASD(태블릿은 왼쪽 조이스틱) · 던지기: E · 능력: 스페이스바(태블릿은 작은 버튼) · 멈춤: P</div>
+      </div>
+      <div class="row stickbtns" style="justify-content:flex-end"><button class="btn" id="hpClose">돌아가기</button><button class="btn gold" id="hpGo">알겠어요! 시작하기</button></div>
+    </div></div>
+    <div id="ovPause" class="ov"><div class="dark card" style="text-align:center"><div class="jua" style="font-size:32px">잠깐 멈춤</div><div class="muted" style="font-size:13px;line-height:1.6;margin-top:6px">이동 방향키/WASD · 던지기 E · 능력 스페이스바</div><div style="margin-top:10px"><button class="btn" id="pHelp">❓ 도움말</button> <button class="btn gold" id="pBtn">계속하기</button></div></div></div>
+  </div>
+</section>
+
+<!-- 5. 쉼터 -->
+<section id="vBonus" class="view">
+  <h2 style="font-size:30px">쉼터 · 보너스 게임</h2>
+  <div class="muted" id="bonusSub">생명력을 채우고 별을 모아요. 생명력이 가득 차 있어도 들어올 수 있어요.</div>
+  <div class="games" id="gameList"></div>
+  <div class="row" style="margin-top:14px"><button class="btn" id="bonusBack">돌아가기</button></div>
+</section>
+<section id="vCard" class="view">
+  <h2 style="font-size:28px">카드 짝 맞추기</h2>
+  <div class="muted" id="cardSub">짝이 맞는 카드 두 장을 찾아요.</div>
+  <div class="mc" id="mcGrid"></div>
+  <div class="msg" id="mcMsg"></div>
+  <div class="row"><button class="btn ghost" id="mcQuit">그만하기</button></div>
+</section>
+<section id="vReview" class="view">
+  <h2 style="font-size:28px">틀린 문제 복습 도전</h2>
+  <div class="muted" id="rvSub">틀렸던 문제를 다시 풀어 봐요.</div>
+  <div class="card rvcard" style="margin-top:10px">
+    <div class="muted" id="rvSite" style="font-size:14px"></div>
+    <div class="jua" id="rvQ" style="font-size:22px;line-height:1.45;margin:4px 0 6px"></div>
+    <div id="rvOpts"></div>
+    <div class="msg" id="rvMsg" style="color:var(--ink)"></div>
+    <div class="row" style="margin-top:8px"><button class="btn" id="rvHint">힌트 보기</button><button class="btn gold" id="rvNext" style="display:none">다음 문제</button></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="rvQuit">그만하기</button></div>
+</section>
+<section id="vOrder" class="view">
+  <h2 style="font-size:28px">시대 순서 퍼즐</h2>
+  <div class="muted" id="odSub">오래된 것부터 차례대로 눌러요.</div>
+  <div class="odlab"><span>◀ 가장 오래된 것</span><span>가장 새로운 것 ▶</span></div>
+  <div class="odslots" id="odSlots"></div>
+  <div class="odcards" id="odCards"></div>
+  <div class="msg" id="odMsg"></div>
+  <div class="row"><button class="btn ghost" id="odQuit">그만하기</button></div>
+</section>
+<section id="vPiece" class="view">
+  <h2 style="font-size:28px">유물 조각 맞추기</h2>
+  <div class="muted" id="pzSub">조각 두 개를 차례로 눌러 자리를 바꿔요. 그림을 완성해 보세요!</div>
+  <div class="pzwrap"><div class="pzgrid" id="pzGrid"></div><div class="pzpeek" id="pzPeek"></div></div>
+  <div class="msg" id="pzMsg"></div>
+  <div class="row"><button class="btn" id="pzHint">그림 잠깐 보기 (1번으로 쳐요)</button><button class="btn ghost" id="pzQuit">그만하기</button></div>
+</section>
+<section id="vDef" class="view">
+  <h2 style="font-size:28px">방어 게임</h2>
+  <div class="muted" id="dfSub">도굴꾼을 눌러서 쫓아내요! 오른쪽 문화재 앞의 붉은 선을 넘으면 문화재를 빼앗겨요.</div>
+  <div class="dfbar"><span id="dfLives"></span><span id="dfTime"></span><span id="dfScore"></span></div>
+  <div class="dfwrap"><canvas id="cvDef" width="960" height="400"></canvas>
+    <div id="dfStart" class="dfov"><div class="jua" style="font-size:30px">준비됐나요?</div><div style="font-size:17px">길 네 개로 도굴꾼이 몰려와요.<br>도굴꾼을 눌러서 쫓아내요. 두목은 세 번 눌러야 해요.<br>문화재를 3번 빼앗기면 끝! 60초를 버텨 보세요.</div><button class="btn gold" id="dfGo">시작!</button></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="dfQuit">그만하기</button></div>
+</section>
+<section id="vCardEnd" class="view">
+  <div class="center"><div class="card" style="text-align:center">
+    <div class="jua" style="font-size:36px;color:#9B4B2A" id="ceTitle">모두 맞혔어요!</div>
+    <div id="ceStars" class="jua" style="font-size:40px;color:#C98A12;margin:6px 0"></div>
+    <div id="ceText" style="font-size:18px;line-height:1.6"></div>
+    <div class="row" style="justify-content:center;margin-top:12px"><button class="btn" id="ceAgain">한 번 더</button><button class="btn gold" id="ceBack">돌아가기</button></div>
+  </div></div>
+</section>
+
+<section id="vRegionClear" class="view"><div id="rcRoot"></div></section>
+
+<!-- 6. 도감 -->
+<section id="vDogam" class="view">
+  <h2 style="font-size:30px">도감</h2>
+  <div class="muted" id="dogamSub"></div>
+  <div class="dg" id="dgGrid"></div>
+  <div class="row" style="margin-top:14px"><button class="btn" id="dogamBack">돌아가기</button></div>
+</section>
+
+</div>
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/core.js"></script>
+<script src="js/store.js"></script>
+<script src="js/charsnd.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
