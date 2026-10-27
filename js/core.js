@@ -89,7 +89,7 @@
     return C.regionCleared(s, r) ? 'cleared' : 'open';
   };
 
-  /* 레벨을 깼을 때: 기록하고 별은 이전 최고보다 높을 때만 늘린다. 레벨 1을 처음 깨면 다음 지역이 열린다. */
+  /* 레벨을 깼을 때: 기록하고 별은 이전 최고보다 높을 때만 늘린다. 레벨 3을 깨면(4번째 퀘스트가 열릴 때) 다음 지역도 함께 열린다. */
   C.applyLevelClear = function (D, s, r, lv, stars) {
     var reg = s.regions[String(r)];
     var firstTime = !reg.q[lv - 1];
@@ -97,7 +97,7 @@
     var prev = Number(reg.stars['L' + lv]) || 0;
     reg.stars['L' + lv] = Math.max(prev, stars);
     var opened = 0;
-    if (lv === 1 && r < (C._seq || REGIONS) && s.unlocked < r + 1) { s.unlocked = r + 1; opened = r + 1; }
+    if (lv === 3 && r < (C._seq || REGIONS) && s.unlocked < r + 1) { s.unlocked = r + 1; opened = r + 1; }
     return { firstTime: firstTime, starsGain: Math.max(0, stars - prev), best: reg.stars['L' + lv], opened: opened };
   };
 

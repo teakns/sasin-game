@@ -16925,12 +16925,12 @@ window.SASIN_DATA = {
    "place": "동해 한가운데 독도(경북 울릉군)",
    "ready": true,
    "pin": [
-    417,
-    487
+    455,
+    506
    ],
    "lab": [
-    440,
-    406
+    445,
+    392
    ],
    "side": "R",
    "map": "img/map_r10.webp",

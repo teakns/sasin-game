@@ -170,6 +170,8 @@
     $('hbHelp').style.display = view === 'vRegion' ? '' : 'none';
     $('hbRest').style.display = (view === 'vBonus' || view === 'vCard' || view === 'vCardEnd') ? 'none' : '';
     $('hbDogam').style.display = view === 'vDogam' ? 'none' : '';
+    $('hbChange').style.display = view === 'vWorld' ? '' : 'none';      // 신수 바꾸기·나가기는 전국 지도에서 위쪽 단추로
+    $('hbOut').style.display = view === 'vWorld' ? '' : 'none';
   }
   function hearts() {
     if (!st || !st.guardian) { $('hearts').innerHTML = ''; return; }
@@ -267,7 +269,7 @@
     D.REGIONS.forEach(function (reg) { svg += '<line x1="' + reg.pin[0] + '" y1="' + (reg.pin[1] - 4) + '" x2="' + reg.lab[0] + '" y2="' + reg.lab[1] + '"></line>'; });
     svg += '</svg>';
     var holder = document.createElement('div'); holder.innerHTML = svg; if (holder.firstChild) wm.appendChild(holder.firstChild);
-    var list = '';
+    var list = ''; worldFit = [];
     D.REGIONS.slice().sort(function (a, b) { return rno(a.id) - rno(b.id); }).forEach(function (reg) {      // 0번(독도)이 맨 위
       var s = C.regionStatus(D, st, reg.id);
       var w = document.createElement('div'); w.className = 'pinw'; w.style.left = (reg.pin[0] / 5) + '%'; w.style.top = (reg.pin[1] / 7.5) + '%';
@@ -278,7 +280,7 @@
       var lb = document.createElement('div'); lb.className = 'plab ' + s; lb.style.left = (reg.lab[0] / 5) + '%'; lb.style.top = (reg.lab[1] / 7.5) + '%';
       lb.innerHTML = '<i>' + (s === 'cleared' ? '✓' : rno(reg.id)) + '</i><span>' + reg.name + '<small>' + (s === 'soon' ? '준비 중' : s === 'locked' ? '잠겨 있어요' : s === 'cleared' ? '클리어' : C.clearedCount(st, reg.id) + ' / 5') + '</small></span>';
       lb.onclick = function () { enterRegion(reg.id); };
-      wm.appendChild(lb);
+      wm.appendChild(lb); worldFit.push({ reg: reg, pin: w, lab: lb });
       var stText = s === 'locked' ? '잠겨 있어요' : s === 'soon' ? '준비 중이에요' : s === 'cleared' ? '클리어 ●' : C.clearedCount(st, reg.id) + ' / 5';
       list += '<button class="rg ' + s + '" data-id="' + reg.id + '"><span class="no">' + rno(reg.id) + '</span><span><div class="nm">' + reg.name + '</div><div class="muted" style="font-size:13px">' + reg.era + ' · ' + reg.place + '</div>' + (reg.ready ? '<div class="muted" style="font-size:12.5px">' + regionTitleShort(reg.id) + '</div>' : '') + '</span><span class="st">' + stText + '</span></button>';
     });
@@ -292,15 +294,28 @@
       era += (i ? '→ ' : '') + '<span class="' + (C.regionCleared(st, id) ? 'ok' : '') + '">' + reg.era.replace(' 시대', '') + '</span> ';
     });
     $('era').innerHTML = era;
-    $('wbChange').onclick = function () { openSelect('change'); };
-    $('wbOut').onclick = function () { if (!practice && S) { S.flush(); S.logout(); } st = null; practice = false; show('vLogin'); $('codeIn').value = ''; hud(); };
-    show('vWorld');
+    $('hbChange').onclick = function () { openSelect('change'); };
+    $('hbOut').onclick = function () { if (!practice && S) { S.flush(); S.logout(); } st = null; practice = false; show('vLogin'); $('codeIn').value = ''; hud(); };
+    show('vWorld'); fitWorldLabels(); requestAnimationFrame(fitWorldLabels);
   }
+  /* 작은 화면에서는 지도가 줄어도 표시점·이름표 크기는 그대로라 서로 겹칠 수 있어요. 겹치면 이름표를 겹치지 않을 만큼만 위로 올리고 점선도 따라가요. */
+  var worldFit = [];
+  function fitWorldLabels() {
+    if (view !== 'vWorld' || !worldFit.length) return;
+    var wm = $('worldMap'), H = wm.clientHeight || 1, lines = wm.querySelectorAll('#lead line');
+    worldFit.forEach(function (f) { f.lab.style.marginTop = '0px'; if (lines[f.reg.id - 1]) lines[f.reg.id - 1].setAttribute('y2', f.reg.lab[1]); });
+    worldFit.forEach(function (f) {
+      var a = f.pin.firstChild.getBoundingClientRect(), b = f.lab.getBoundingClientRect();
+      var ox = Math.min(a.right, b.right) - Math.max(a.left, b.left), oy = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+      if (ox > 0 && oy > 0) { var dy = (b.bottom - a.top) + 6; f.lab.style.marginTop = (-dy) + 'px'; if (lines[f.reg.id - 1]) lines[f.reg.id - 1].setAttribute('y2', f.reg.lab[1] - dy / (H / 750)); }
+    });
+  }
+  window.addEventListener('resize', fitWorldLabels);
 
   function enterRegion(r) {
     var reg = D.REGIONS[r - 1];
     var s = C.regionStatus(D, st, r);
-    if (s === 'locked') { worldToast('앞 지역을 모두 깨면 열려요'); return; }
+    if (s === 'locked') { worldToast('앞 지역의 퀘스트를 3개 이상 깨면 열려요'); return; }
     if (!reg.ready) { worldToast('이 지역은 준비 중이에요. 곧 만나요!'); return; }
     curR = r;
     show('vRegion');
@@ -839,10 +854,14 @@
     $('cText').innerHTML += titleNewsHtml();
     var lv = B.level; $('cBtn').onclick = function () { openWorld(); }; $('cAgain').onclick = function () { startBattle(lv); }; $('cLevels').onclick = function () { showLevels(); };
     $('cBtn').textContent = regionDone ? '🎉 지역 클리어 화면 보기' : '전국 지도로';
+    var hasNext = win && !regionDone && lv < D.LEVELS.length && C.levelOpen(st, curR, lv + 1);      // 다음 레벨이 있고 열려 있으면 '다음 레벨로' 단추를 보여요
+    $('cNext').style.display = hasNext ? '' : 'none'; $('cNext').className = 'btn gold'; $('cBtn').className = hasNext ? 'btn' : 'btn gold';
+    $('cNext').onclick = function () { chooseLevel(lv + 1); };
     if (regionDone) {
       $('cText').innerHTML += '<div class="newtitle" style="background:#E8F7EE;border-color:#5BB98C;color:#1E6B4A">🎉 ' + rno(curR) + '지역의 레벨 5개를 모두 깼어요!</div>';
       $('cBtn').onclick = function () { openRegionClear(curR); };
     }
+    if (regionDone) { hud(); var rr = curR; setTimeout(function () { if (phase === 'end' && view === 'vRegion') openRegionClear(rr); }, 700); return; }      // 지역을 모두 깬 순간: 결과 창 없이 바로 지역 클리어 화면
     overlays('ovClear'); hud();
   }
 
@@ -1873,8 +1892,15 @@
       goFullscreen();
       startIntro();      // 시작 화면 → 프롤로그 → 로그인 (프롤로그는 언제든 '건너뛰기' 가능)
     }
-    $('vSplash').onclick = function (e) { if (e.target.closest && e.target.closest('.sndbtn')) return; go(); };
+    var infoOpen = false;
+    function setInfo(on) { infoOpen = on; $('infoModal').style.display = on ? 'flex' : 'none'; if (on) { try { $('infoClose').focus(); } catch (e) {} } }
+    $('btnInfo').onclick = function (e) { e.stopPropagation(); setInfo(true); };
+    $('btnInfo2').onclick = function (e) { e.stopPropagation(); setInfo(true); };
+    $('infoClose').onclick = function (e) { e.stopPropagation(); setInfo(false); };
+    $('infoModal').onclick = function (e) { if (e.target === $('infoModal')) setInfo(false); };
+    $('vSplash').onclick = function (e) { if (infoOpen || (e.target.closest && (e.target.closest('.sndbtn') || e.target.closest('.infobtn')))) return; go(); };
     document.addEventListener('keydown', function (e) {
+      if (infoOpen) { if (e.key === 'Escape') setInfo(false); return; }
       if (view === 'vSplash' && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); go(); }
       else if (view === 'vIntro') { if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); introNext(); } else if (e.key === 'Escape') introEnd(); }
     });
@@ -1889,6 +1915,7 @@
     A.onChange(upd); upd(); A.onChange(function (m) { if (proEl) proEl.muted = (m === 'off'); });
     document.addEventListener('click', function (e) {   // 버튼을 누를 때 나는 소리
       var b = e.target.closest ? e.target.closest('button') : null; if (!b || b.disabled) return;
+      if (b.classList.contains('infobtn') || b.id === 'infoClose') { A.sfx('click'); return; }
       if (b.classList.contains('opt') || b.id === 'bSkill' || b.id === 'bChase' || b.classList.contains('sndbtn') || b.id === 'hbSound' || b.classList.contains('odcard') || b.classList.contains('pzp')) return;
       A.sfx(b.classList.contains('gc') ? 'select' : (b.id === 'selBack' || b.id === 'dfQuit' || b.id === 'odQuit') ? 'back' : 'click');
     }, true);
