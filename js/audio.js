@@ -135,12 +135,12 @@
     tone({ f: 210, f2: 110, t: t, a: 0.005, d: 0.26, vol: 0.14, type: 'sawtooth' });
     tone({ f: 2100, t: t + 0.02, a: 0.002, d: 0.09, vol: 0.05, type: 'sine' });
   };
-  SFX.axe_back = function () {       // 도끼가 돌아올 때: 부메랑처럼 '위~~잉'
-    var t = ctx.currentTime, dur = 0.8, o = ctx.createOscillator(), lfo = ctx.createOscillator(), lg = ctx.createGain(), g = ctx.createGain(), f = ctx.createBiquadFilter(), env = ctx.createGain();
+  SFX.axe_back = function (legSec) {       // 도끼가 돌아올 때: 부메랑처럼 '위~~잉' (길이를 돌아오는 시간에 맞춰, 손에 잡히기(착) 전에 끝나요)
+    var t = ctx.currentTime, dur = Math.max(0.22, Math.min(1.1, (+legSec || 0.8) * 0.92)), o = ctx.createOscillator(), lfo = ctx.createOscillator(), lg = ctx.createGain(), g = ctx.createGain(), f = ctx.createBiquadFilter(), env = ctx.createGain();
     o.type = 'sawtooth'; o.frequency.setValueAtTime(170, t); o.frequency.exponentialRampToValueAtTime(520, t + dur * 0.85); o.frequency.exponentialRampToValueAtTime(560, t + dur);
     lfo.type = 'sine'; lfo.frequency.value = 22; lg.gain.value = 0.45; g.gain.value = 0.55; lfo.connect(lg); lg.connect(g.gain);
     f.type = 'lowpass'; f.frequency.setValueAtTime(700, t); f.frequency.exponentialRampToValueAtTime(2400, t + dur);
-    env.gain.setValueAtTime(0.0001, t); env.gain.exponentialRampToValueAtTime(0.2, t + dur * 0.7); env.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    env.gain.setValueAtTime(0.0001, t); env.gain.exponentialRampToValueAtTime(0.2, t + dur * 0.62); env.gain.exponentialRampToValueAtTime(0.0001, t + dur);
     o.connect(g); g.connect(f); f.connect(env); env.connect(sfxG); o.start(t); lfo.start(t); o.stop(t + dur + 0.05); lfo.stop(t + dur + 0.05);
     noise({ t: t, d: dur, f: 500, f2: 1800, q: 0.8, vol: 0.09, type: 'bandpass' });
   };

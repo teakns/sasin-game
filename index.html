@@ -19,8 +19,8 @@
 <div id="hud">
   <div class="row"><img id="hface" alt=""><div><div id="hname" class="jua" style="font-size:18px"></div><div id="hearts" aria-label="생명력"></div></div></div>
   <div id="hlabel" class="jua" style="font-size:18px"></div>
-  <div class="row"><span id="hstars" class="jua" style="font-size:18px"></span><span id="savestat"></span>
-    <button class="btn hudbtn" id="hbHelp">❓ 도움말</button><button class="btn hudbtn" id="hbWorld">전국 지도</button><button class="btn hudbtn" id="hbRest">쉼터</button><button class="btn hudbtn" id="hbDogam">도감</button><button class="btn hudbtn" id="hbChange">신수 바꾸기</button><button class="btn hudbtn ghost" id="hbOut">나가기</button><button class="btn hudbtn" id="hbFull" title="전체 화면">⛶ 전체 화면</button><button class="btn hudbtn" id="hbSound" title="소리 설정"></button></div>
+  <div class="row" id="hright"><span id="hstars" class="jua" style="font-size:18px"></span><span id="savestat"></span>
+    <button class="btn hudbtn" id="hbHelp">❓ 도움말</button><button class="btn hudbtn" id="hbWorld">전국 지도</button><button class="btn hudbtn" id="hbRest">쉼터</button><button class="btn hudbtn" id="hbDogam">도감</button><button class="btn hudbtn" id="hbChange">신수 바꾸기</button><button class="btn hudbtn ghost" id="hbOut">나가기</button><button class="btn hudbtn" id="hbFull" title="전체 화면">⛶ 전체 화면</button><button class="btn hudbtn" id="hbSound" title="소리 설정"></button><button class="infobtn hudbtn" id="hbInfo" type="button" aria-label="게임 정보">ⓘ<span class="infotxt"> 정보</span></button></div>
 </div>
 
 <!-- 0. 시작 화면 · 프롤로그 -->
@@ -33,7 +33,7 @@
     <div id="spHint">화면을 눌러 시작해요</div>
     <div id="spNote">🔊 소리가 나요. 오른쪽 위 단추로 끌 수 있어요.</div>
   </div>
-  <div id="spFoot"><span>반달온 스튜디오 · 기획·제작 반달온 · AI 도구의 도움을 받아 만들었어요 · v1.5 · 교육용</span> <button class="infobtn" id="btnInfo" type="button">ⓘ 정보</button></div>
+  <div id="spFoot"><span>반달온 스튜디오 · 기획·제작 반달온 · AI 도구의 도움을 받아 만들었어요 · v1.9 · 교육용</span> <button class="infobtn" id="btnInfo" type="button">ⓘ 정보</button></div>
   <button class="btn ghost sndbtn" id="sndSplash"></button>
 </section>
 <section id="vIntro" class="view">
@@ -79,7 +79,7 @@
     <div id="worldMap"><img class="land" id="worldImg" alt="한반도와 북쪽 땅을 그린 지도"></div>
     <div id="worldSide">
       <h2 style="font-size:26px">도굴꾼이 전국으로 흩어졌어요!</h2>
-      <div class="muted" style="line-height:1.5">지역을 차례로 지켜요. 앞 지역의 퀘스트를 3개 이상 깨면 다음 지역이 열려요.</div>
+      <div class="muted" style="line-height:1.5">지역을 차례로 지켜요. 앞 지역의 퀘스트를 3개 이상 깨면 다음 지역이 열려요. 각 지역별 획득 가능 별의 수(퀘스트 15개, 쉼터 보너스 게임 15개).<br>학습을 위해 문제가 무작위로 반복 생성됩니다.</div>
       <div id="regionList" style="display:flex;flex-direction:column;gap:8px"></div>
       <div class="jua" style="font-size:16px;margin-top:4px">시대 순서</div>
       <div id="era"></div>
@@ -223,7 +223,7 @@
       <dt>제작사</dt><dd>반달온 스튜디오</dd>
       <dt>기획·제작</dt><dd>반달온</dd>
       <dt>제작 도움</dt><dd>AI 도구의 도움을 받아 만들었어요</dd>
-      <dt>버전</dt><dd>v1.5</dd>
+      <dt>버전</dt><dd>v1.9</dd>
       <dt>이용 구분</dt><dd>교육용</dd>
       <dt>이용 안내</dt><dd>교육용이에요. 수업에서 사용하는 것은 환영해요. 상업적으로 판매하거나 임의로 변형해서 사용하지 말아 주세요.</dd>
       <dt>글꼴</dt><dd>주아체, 고운돋움 (구글 폰트)</dd>

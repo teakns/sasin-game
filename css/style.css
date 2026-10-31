@@ -356,3 +356,23 @@ b.neg{font-weight:800;text-decoration:underline;text-decoration-thickness:3px;te
 .infobox dl{display:grid;grid-template-columns:92px 1fr;gap:6px 12px;margin:0 0 14px;font-size:15px}
 .infobox dt{color:var(--muted);font-weight:700}.infobox dd{margin:0;color:var(--text,#F1EAD8)}
 .infobox a{color:var(--gold)}
+
+.infohome{border-top:1px dashed var(--muted);padding-top:10px;margin:2px 0 14px;font-size:14px;color:var(--text,#F1EAD8)}
+.infohome ul{margin:6px 0 6px;padding-left:20px;line-height:1.7}
+.infohome b{color:var(--gold)}
+.infohint{font-size:13px;color:var(--muted);line-height:1.5}
+
+.infobox{position:relative}
+.infox{position:sticky;top:0;float:right;margin:-8px -10px 0 8px;width:38px;height:38px;border-radius:50%;border:1px solid var(--muted);background:var(--panel2,#2A2118);color:var(--text,#F1EAD8);font-size:18px;cursor:pointer;z-index:2}
+
+/* 조이스틱 손잡이: 원 크기와 상관없이 정중앙(자바스크립트가 움직일 때 left/top을 덮어써요) */
+#knob{left:calc(50% - 20px);top:calc(50% - 20px)}
+@media (max-height:520px){#knob{left:calc(50% - 20px);top:calc(50% - 20px)}}
+
+/* 위쪽 줄 ⓘ 정보 단추(소리 단추 오른쪽 끝): 다른 위쪽 단추와 같은 높이·글자 크기 */
+#hud .infobtn{margin-left:0;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;font-size:15px;min-height:42px;padding:0 14px}
+@media (max-height:520px){#hud .infobtn{font-size:13px;min-height:32px;padding:0 10px}}
+@media (max-width:520px){#hud .infobtn .infotxt{display:none}#hud .infobtn{padding:0 12px}}
+/* 폰 세로 화면: 위쪽 단추가 여러 줄로 접혀도 줄마다 오른쪽 끝에 맞추고(별 개수는 왼쪽 그대로), ⓘ 정보가 맨 오른쪽에 와요 */
+@media (orientation:portrait) and (max-width:700px){#hright{flex:1 1 100%;justify-content:flex-end}#hright #hstars{margin-right:auto}}
+#hud .infobtn .infotxt{margin-left:4px}
