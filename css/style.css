@@ -376,3 +376,9 @@ b.neg{font-weight:800;text-decoration:underline;text-decoration-thickness:3px;te
 /* 폰 세로 화면: 위쪽 단추가 여러 줄로 접혀도 줄마다 오른쪽 끝에 맞추고(별 개수는 왼쪽 그대로), ⓘ 정보가 맨 오른쪽에 와요 */
 @media (orientation:portrait) and (max-width:700px){#hright{flex:1 1 100%;justify-content:flex-end}#hright #hstars{margin-right:auto}}
 #hud .infobtn .infotxt{margin-left:4px}
+
+/* 신수 고르는 화면: 설명 글이 길든 짧든 속도·생명력 줄을 카드 맨 아래에 맞춰서 네 카드가 같은 높이에 */
+.gc .in .stats{margin-top:auto;padding-top:4px}
+
+/* 신수 고르는 화면: 사는 곳(동쪽·봄·나무)과 특수 능력 설명 글은 15px */
+.gc .in small{font-size:15px}
