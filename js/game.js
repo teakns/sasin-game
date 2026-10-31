@@ -251,7 +251,7 @@
     var h = '';
     Object.keys(D.GUARDIANS).forEach(function (id) {
       var g = D.GUARDIANS[id];
-      h += '<button class="gc' + (selPick === id ? ' on' : '') + '" data-id="' + id + '" style="border-color:' + (selPick === id ? '#F2B945' : g.color) + '"><img src="' + g.card + '" alt="' + g.name + '" style="object-position:' + (g.cardPos || '50% 50%') + '"><div class="in"><div class="row" style="justify-content:space-between"><b>' + g.name + '</b><span class="chip">' + g.type + '</span></div><small>' + g.dir + '</small><small><b style="color:#F2B945">' + g.skill + '</b> - ' + g.desc + '</small><div class="row"><span class="chip">속도 ' + Math.round(g.spd * 100) + '%</span><span class="chip">생명력 ' + g.life + '</span></div></div></button>';
+      h += '<button class="gc' + (selPick === id ? ' on' : '') + '" data-id="' + id + '" style="border-color:' + (selPick === id ? '#F2B945' : g.color) + '"><img src="' + g.card + '" alt="' + g.name + '" style="object-position:' + (g.cardPos || '50% 50%') + '"><div class="in"><div class="row" style="justify-content:space-between"><b>' + g.name + '</b><span class="chip">' + g.type + '</span></div><small>' + g.dir + '</small><small><b style="color:#F2B945">' + g.skill + '</b> - ' + g.desc + '</small><div class="row stats"><span class="chip">속도 ' + Math.round(g.spd * 100) + '%</span><span class="chip">생명력 ' + g.life + '</span></div></div></button>';
     });
     $('selGrid').innerHTML = h;
     Array.prototype.forEach.call(document.querySelectorAll('#selGrid .gc'), function (b) {
@@ -901,7 +901,7 @@
     moving = l > 0.1; if (moving) { mvx = ax / l; mvy = ay / l; }
     if (ax > 0.2) dirP = 1; else if (ax < -0.2) dirP = -1;
     var fly = B.fly > 0, swim = g.id === 'hm' && B.ward > 0; if (!fly && !swim) unstick();      // 결계가 끝날 때 강 한가운데였다면 가까운 강가로 밀려 나와요
-    var sp = 140 * g.spd * (B.boost > 0 ? 1.8 : 1) * (fly ? 1.25 : 1); if (!fly && inForest(P)) sp *= 0.55;
+    var sp = 140 * g.spd * (B.boost > 0 ? 1.8 : 1) * (fly ? 1.25 : 1); if (!fly && inForest(P)) sp *= (g.id === 'bh' ? 0.775 : 0.55);      // 숲에서는 느려져요(속도 55%). 숲에 사는 호랑이 백호는 느려지는 정도가 절반이라 77.5%
     var nx = P.x + ax * sp * dt, ny = P.y + ay * sp * dt;
     if (!blockedG(nx, P.y, P.r, fly, swim)) P.x = nx; if (!blockedG(P.x, ny, P.r, fly, swim)) P.y = ny;
     if (moving) { wt += dt * (B.boost > 0 ? 14 : 8); puffT -= dt; if (puffT <= 0 && !fly) { puffT = B.boost > 0 ? 0.05 : 0.11; puff(P.x - mvx * 10, P.y + 24, -mvx * 30 + (Math.random() - 0.5) * 20, -14 - Math.random() * 14, 4 + Math.random() * 3, inForest(P) ? 'rgba(110,150,90,' : 'rgba(160,125,80,', 0.55); } } else wt += dt * 2;
@@ -1965,7 +1965,7 @@
       start: function (lv, r) { curR = r || curR; if (view !== 'vRegion') show('vRegion'); startBattle(lv); }, step: function (n, dt) { for (var i = 0; i < n && phase === 'play'; i++) update(dt || 0.05); },
       arena: function () { TWS = []; OB = { mountains: [], forests: [], river: { pts: [], half: [], bridges: [] }, coast: OB.coast }; grid = buildGrid(); B.sites.forEach(function (s, i) { s.x = 400 + i * 230; s.y = 1120; }); },
       blocked: function (x, y) { return blockedG(x, y, P.r, false); }, giveFly: function (t) { B.fly = t; },
-      bonusEnd: function (key, stars, title, html, againFn) { return bonusEnd(key, stars, title, html, againFn); }, noThieves: function () { B.thieves.forEach(function (th) { th.active = false; }); }, giveWard: function (t) { B.ward = t; }, riverOnly: function (x, y) { return blockedG(x, y, P.r, false, false) && !blockedG(x, y, P.r, false, true); }, blockedSwim: function (x, y) { return blockedG(x, y, P.r, false, true); }, setJoy: function (x, y) { joy.x = x; joy.y = y; }, pos: function () { return { x: P.x, y: P.y }; }, throwNow: function (dir) { dirP = dir || dirP; B.cdThrow = 0; throwWeapon(); }, projs: function () { return B.projs.map(function (p) { return { type: p.type, x: p.x, y: p.y, back: p.back, r: p.r, d: p.d, rot: p.rot, sdir: p.sdir }; }); }, setCd: function (v) { B.cdThrow = v; },
+      bonusEnd: function (key, stars, title, html, againFn) { return bonusEnd(key, stars, title, html, againFn); }, forestAt: function (x, y) { return inForest({ x: x, y: y }); }, noThieves: function () { B.thieves.forEach(function (th) { th.active = false; }); }, giveWard: function (t) { B.ward = t; }, riverOnly: function (x, y) { return blockedG(x, y, P.r, false, false) && !blockedG(x, y, P.r, false, true); }, blockedSwim: function (x, y) { return blockedG(x, y, P.r, false, true); }, setJoy: function (x, y) { joy.x = x; joy.y = y; }, pos: function () { return { x: P.x, y: P.y }; }, throwNow: function (dir) { dirP = dir || dirP; B.cdThrow = 0; throwWeapon(); }, projs: function () { return B.projs.map(function (p) { return { type: p.type, x: p.x, y: p.y, back: p.back, r: p.r, d: p.d, rot: p.rot, sdir: p.sdir }; }); }, setCd: function (v) { B.cdThrow = v; },
       allSites: function (v) { testAllSites = !!v; },
       noTowers: function (v) { testNoTowers = !!v; },
       chooseLevel: chooseLevel, helpGo: function () { $('hpGo').onclick(); }, helpClose: function () { $('hpClose').onclick(); }, showHelp: showHelp, overlayOf: function () { return curOv; },
